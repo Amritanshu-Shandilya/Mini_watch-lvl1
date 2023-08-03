@@ -4,6 +4,8 @@
 #include <SPI.h>
 #include <Wire.h>
 
+#include <numbers.h>
+
 #define SDA 21
 #define SCL 22
 
@@ -12,21 +14,24 @@
 
 #define OLED_RESET -1
 
+
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-void writeHello() {
-  // put your main code here, to run repeatedly:
-  delay(10); // this speeds up the simulation
+void drawWatchFace(){
+	int i;
   display.clearDisplay();
-
-  display.setTextSize(1);             // Normal 1:1 pixel scale
-  display.setTextColor(WHITE);        // Draw white text
-  display.setCursor(0,0);             // Start at top-left corner
-  display.println(F("Hello, world!"));
-
-  display.display();
-  delay(1000);
+	for (i=0; i<10; i++){
+		display.clearDisplay();
+  	display.drawBitmap(18, 19, number_array[i], 20, 25, 1);
+		display.drawBitmap(40, 19, number_array[i], 20, 25, 1);
+		display.drawBitmap(67, 19, number_array[i], 20, 25, 1);
+		display.drawBitmap(88, 19, number_array[i], 20, 25, 1);
+  	display.display();
+		delay(1000);
+		if (i==9)
+			i=-1;
+	}
 }
 
 
@@ -43,7 +48,7 @@ void setup() {
   delay(2000);
   display.clearDisplay();
   delay(1000);
-  writeHello();
+  drawWatchFace();
    
 }
 
