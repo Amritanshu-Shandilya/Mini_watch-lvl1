@@ -35,8 +35,9 @@ void connect2Wifi(){
   // Connect to Wi-Fi
   display.clearDisplay();
   display.println("Connecting to wifi");
-  display.println(ssid);
-  WiFi.begin(ssid, password);
+  //WIFI_SSID and WIFI_PASSWORD are secret variables
+  display.println(WIFI_SSID);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     display.print(".");
