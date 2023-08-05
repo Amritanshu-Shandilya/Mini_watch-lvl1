@@ -3,8 +3,17 @@
 #include <Adafruit_GFX.h>
 #include <SPI.h>
 #include <Wire.h>
+#include <WiFi.h>
 
-#include <numbers.h>
+// For NTP
+#include "time.h"
+
+
+// Resources
+#include <numbers.h> //bytecode for digits
+
+//Veiwers create your own secrets.h that currently holds wifi credentials to get time using NTP
+#include <secrets.h> //passwords
 
 #define SDA 21
 #define SCL 22
@@ -14,11 +23,31 @@
 
 #define OLED_RESET -1
 
+//NTP stuff
+const char* ntpServer = "pool.ntp.org";
+const long gmtOffset_sec = 19800; //Indian Standard Time = GMT+05:30
+const int daylightOffset_sec = 0; //IST doesnt observe daylight saving time or other seasonal adjustments
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+void connect2Wifi(){
+  // Connect to Wi-Fi
+  display.clearDisplay();
+  display.println("Connecting to wifi");
+  display.println(ssid);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    display.print(".");
+  }
+  display.println("");
+  //display.clearDisplay();
+  display.println("Connection successful");
+}
+
 void drawWatchFace(){
+  //code to draw and update watchface
 	int i;
   display.clearDisplay();
 	for (i=0; i<10; i++){
@@ -45,10 +74,17 @@ void setup() {
     for(;;); // Don't proceed, loop forever
   }
 
+  display.setTextSize(1);             // Normal 1:1 pixel scale
+  display.setTextColor(WHITE);        // Draw white text
+  display.setCursor(0,0);             // Start at top-left corner
+  
+  // Connect to Wi-Fi
+  connect2Wifi();
+
   delay(2000);
   display.clearDisplay();
-  delay(1000);
-  drawWatchFace();
+  // delay(1000);
+  // drawWatchFace();
    
 }
 
