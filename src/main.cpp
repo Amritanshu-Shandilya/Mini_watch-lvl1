@@ -30,25 +30,31 @@ const int daylightOffset_sec = 0; //IST doesnt observe daylight saving time or o
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+void setupText(){
+  display.setTextSize(1);             // Normal 1:1 pixel scale
+  display.setTextColor(WHITE);        // Draw white text
+  display.setCursor(0,0);             // Start at top-left corner
+}
 
 void connect2Wifi(){
   // Connect to Wi-Fi
+  setupText();
   display.clearDisplay();
-  display.println("Connecting to wifi");
-  display.println(ssid);
+  display.println(F("Connecting to wifi"));
+  display.display();
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    display.print(".");
+    delay(500); 
   }
-  display.println("");
-  //display.clearDisplay();
-  display.println("Connection successful");
+  display.clearDisplay();
+  display.println(F("Connection successful"));
+  display.display();
 }
 
 void drawWatchFace(){
   //code to draw and update watchface
 	int i;
+  setupText();
   display.clearDisplay();
 	for (i=0; i<10; i++){
 		display.clearDisplay();
@@ -67,17 +73,17 @@ void drawWatchFace(){
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
+  //display.clearDisplay();
   
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
     Serial.println(F("SSD1306 allocation failed"));
     for(;;); // Don't proceed, loop forever
   }
+  display.clearDisplay();
+  display.println(F("Screen setup done"));
+  display.display();
 
-  display.setTextSize(1);             // Normal 1:1 pixel scale
-  display.setTextColor(WHITE);        // Draw white text
-  display.setCursor(0,0);             // Start at top-left corner
-  
   // Connect to Wi-Fi
   connect2Wifi();
 
