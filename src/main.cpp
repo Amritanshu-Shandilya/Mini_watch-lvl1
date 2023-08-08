@@ -6,7 +6,8 @@
 #include <WiFi.h>
 
 // For NTP
-#include "time.h"
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 
 
 // Resources
@@ -23,9 +24,17 @@
 
 #define OLED_RESET -1
 
+// Variables to save date and time
+String formattedDate;
+String dayStamp;
+String timeStamp;
+
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+//Defining an NTP Client
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP);
 
 
 void setupText(){
@@ -47,6 +56,7 @@ void connect2Wifi(){
   }
   display.clearDisplay();
   display.println(F("Connection successful"));
+  display.println(WiFi.localIP());
   display.display();
 }
 
@@ -89,10 +99,25 @@ void setup() {
   display.clearDisplay();
   // delay(1000);
   // drawWatchFace();
-   
+
+  timeClient.begin();
+  timeClient.setTimeOffset(19800); 
 }
 
 void loop(){
-  //Empty
+  while(!timeClient.update()){
+    timeClient.forceUpdate();
+   }
+  formattedDate = timeClient.getFormattedTime(); 
+   
+  int splitT = formattedDate.indexOf("T");
+  dayStamp = formattedDate.substring(0, splitT);
+  display.println(dayStamp);
+  timeStamp = formattedDate.substring(splitT+1, formattedDate.length()-1);
+  display.println(timeStamp);
+  display.display();
+  delay(1500);
+  display.clearDisplay();
+   
 }
 
