@@ -5,9 +5,8 @@
 #include <Wire.h>
 #include <WiFi.h>
 
-// For NTP
-#include <NTPClient.h>
-#include <WiFiUdp.h>
+#include <time.h>
+
 
 
 // Resources
@@ -25,6 +24,8 @@
 #define OLED_RESET -1
 
 // Variables to save date and time
+int GMT_offset = 19800;
+int daylight_offset = 0;
 String formattedDate;
 String dayStamp;
 String timeStamp;
@@ -32,21 +33,18 @@ String timeStamp;
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-//Defining an NTP Client
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP);
 
 
-void setupText(){
+void setupText(int size){
   // Function to be called for setting size color and cursor position
-  display.setTextSize(1);             // Normal 1:1 pixel scale
+  display.setTextSize(size);             // Normal 1:1 pixel scale
   display.setTextColor(WHITE);        // Draw white text
   display.setCursor(0,0);             // Start at top-left corner
 }
 
 void connect2Wifi(){
   // Connect to Wi-Fi
-  setupText();
+  setupText(1);
   display.clearDisplay();
   display.println(F("Connecting to wifi"));
   display.display();
@@ -63,7 +61,7 @@ void connect2Wifi(){
 void drawWatchFace(){
   //code to draw and update watchface
 	int i;
-  setupText();
+  setupText(1);
   display.clearDisplay();
 	for (i=0; i<10; i++){
 		display.clearDisplay();
@@ -86,12 +84,10 @@ void setup() {
   
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
-    Serial.println(F("SSD1306 allocation failed"));
+    // Serial.println(F("SSD1306 allocation failed"));
     for(;;); // Don't proceed, loop forever
   }
   display.clearDisplay();
-  display.println(F("Screen setup done"));
-  display.display();
 
   // Connect to Wi-Fi
   connect2Wifi();
@@ -100,24 +96,27 @@ void setup() {
   // delay(1000);
   // drawWatchFace();
 
-  timeClient.begin();
-  timeClient.setTimeOffset(19800); 
+  configTime(GMT_offset, daylight_offset, "pool.ntp.org","time.nist.gov");
+ 
 }
 
 void loop(){
-  while(!timeClient.update()){
-    timeClient.forceUpdate();
-   }
-  formattedDate = timeClient.getFormattedTime(); 
-   
-  int splitT = formattedDate.indexOf("T");
-  dayStamp = formattedDate.substring(0, splitT);
-  display.println(dayStamp);
-  timeStamp = formattedDate.substring(splitT+1, formattedDate.length()-1);
-  display.println(timeStamp);
-  display.display();
-  delay(1500);
+
+  time_t rawtime = time(nullptr);
+  struct tm* timeinfo = localtime(&rawtime);
+
   display.clearDisplay();
-   
+  display.setTextSize(3);
+  display.setTextColor(WHITE);
+  display.setCursor(0,25);
+  display.print(timeinfo->tm_hour);
+  display.print(":");
+  if( timeinfo->tm_min <10)
+  display.print("0");
+  display.print(timeinfo->tm_min);
+  display.display();
+  
+  delay(1000); 
+ 
 }
 
