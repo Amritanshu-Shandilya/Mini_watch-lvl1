@@ -26,14 +26,13 @@
 // Variables to save date and time
 int GMT_offset = 19800;
 int daylight_offset = 0;
-String formattedDate;
-String dayStamp;
-String timeStamp;
+
 
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+#include <date_day.h>
 
 void setupText(int size){
   // Function to be called for setting size color and cursor position
@@ -108,15 +107,25 @@ void loop(){
   display.clearDisplay();
   display.setTextSize(3);
   display.setTextColor(WHITE);
-  display.setCursor(0,25);
+  display.setCursor(0,10);
   display.print(timeinfo->tm_hour);
   display.print(":");
   if( timeinfo->tm_min <10)
   display.print("0");
   display.print(timeinfo->tm_min);
   display.display();
+  display.setTextSize(2);
+  display.setCursor(80,15);
+  display.print(":");
+  if( timeinfo->tm_sec <10)
+  display.print("0");
+  display.print(timeinfo->tm_sec); 
+  display.setCursor(0,40);
+  displayDay(timeinfo -> tm_wday);
+  display.display();
+
   
   delay(1000); 
- 
+
 }
 
