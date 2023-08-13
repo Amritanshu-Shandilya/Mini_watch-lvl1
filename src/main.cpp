@@ -27,12 +27,10 @@
 int GMT_offset = 19800;
 int daylight_offset = 0;
 
-
+int h,m,s,w;
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
-#include <date_day.h>
 
 void setupText(int size){
   // Function to be called for setting size color and cursor position
@@ -40,6 +38,22 @@ void setupText(int size){
   display.setTextColor(WHITE);        // Draw white text
   display.setCursor(0,0);             // Start at top-left corner
 }
+
+void drawWatchFace(int h1, int h2, int m1, int m2){
+  //code to draw and update watchface
+	int i;
+  setupText(1);
+  display.clearDisplay();
+	display.clearDisplay();
+  display.drawBitmap(18, 19, number_array[h1], 20, 25, 1);
+	display.drawBitmap(40, 19, number_array[h2], 20, 25, 1);
+	display.drawBitmap(67, 19, number_array[m1], 20, 25, 1);
+	display.drawBitmap(88, 19, number_array[m2], 20, 25, 1);
+  display.display();
+	delay(1000);
+}
+
+#include <date_day.h>
 
 void connect2Wifi(){
   // Connect to Wi-Fi
@@ -56,25 +70,6 @@ void connect2Wifi(){
   display.println(WiFi.localIP());
   display.display();
 }
-
-void drawWatchFace(){
-  //code to draw and update watchface
-	int i;
-  setupText(1);
-  display.clearDisplay();
-	for (i=0; i<10; i++){
-		display.clearDisplay();
-  	display.drawBitmap(18, 19, number_array[i], 20, 25, 1);
-		display.drawBitmap(40, 19, number_array[i], 20, 25, 1);
-		display.drawBitmap(67, 19, number_array[i], 20, 25, 1);
-		display.drawBitmap(88, 19, number_array[i], 20, 25, 1);
-  	display.display();
-		delay(1000);
-		if (i==9)
-			i=-1;
-	}
-}
-
 
 void setup() {
   // put your setup code here, to run once:
@@ -104,25 +99,16 @@ void loop(){
   time_t rawtime = time(nullptr);
   struct tm* timeinfo = localtime(&rawtime);
 
-  display.clearDisplay();
-  display.setTextSize(3);
-  display.setTextColor(WHITE);
-  display.setCursor(0,10);
-  display.print(timeinfo->tm_hour);
-  display.print(":");
-  if( timeinfo->tm_min <10)
-  display.print("0");
-  display.print(timeinfo->tm_min);
-  display.display();
-  display.setTextSize(2);
-  display.setCursor(80,15);
-  display.print(":");
-  if( timeinfo->tm_sec <10)
-  display.print("0");
-  display.print(timeinfo->tm_sec); 
-  display.setCursor(0,40);
-  displayDay(timeinfo -> tm_wday);
-  display.display();
+  h = timeinfo -> tm_hour;
+  m = timeinfo -> tm_min;
+  s = timeinfo -> tm_sec;
+  w = timeinfo -> tm_wday;
+
+  display_hr(h,m);
+
+  // display.setCursor(0,40);
+  // displayDay(w);
+  // display.display();
 
   
   delay(1000); 
