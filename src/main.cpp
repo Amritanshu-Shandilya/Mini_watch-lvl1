@@ -6,12 +6,6 @@
 #include <WiFi.h>
 
 #include <time.h>
-
-
-
-// Resources
-#include <numbers.h> //bytecode for digits
-
 //Veiwers create your own secrets.h that currently holds wifi credentials to get time using NTP
 #include "secrets.h" //passwords
 
@@ -29,10 +23,11 @@ int GMT_offset = 19800;
 int daylight_offset = 0;
 
 int h,m,s,w;
+bool wifi_status;
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-//#include "date_day.h" //including this after the display() object is created because diplay() is used in this header file
+#include "date_day.h" //including this after the display() object is created because diplay() is used in this header file
 
 void watch_init()
 {
@@ -63,35 +58,23 @@ void watch_init()
 //   display.setCursor(0,0);             // Start at top-left corner
 // }
 
-// void drawWatchFace(int h1, int h2, int m1, int m2){
-//   //code to draw and update watchface
-// 	int i;
-//   setupText(1);
-//   display.clearDisplay();
-// 	display.clearDisplay();
-//   display.drawBitmap(18, 19, number_array[h1], 20, 25, 1);
-// 	display.drawBitmap(40, 19, number_array[h2], 20, 25, 1);
-// 	display.drawBitmap(67, 19, number_array[m1], 20, 25, 1);
-// 	display.drawBitmap(88, 19, number_array[m2], 20, 25, 1);
-//   display.display();
-// 	delay(1000);
-// }
 
-// void connect2Wifi(){
-//   // Connect to Wi-Fi
-//   setupText(1);
-//   display.clearDisplay();
-//   display.println(F("Connecting to wifi"));
-//   display.display();
-//   WiFi.begin(ssid, password);
-//   while (WiFi.status() != WL_CONNECTED) {
-//     delay(500); 
-//   }
-//   display.clearDisplay();
-//   display.println(F("Connection successful"));
-//   display.println(WiFi.localIP());
-//   display.display();
-// }
+bool connect2Wifi(){
+  // Connect to Wi-Fi
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setCursor(0,25);
+  display.println(F("Connecting to wifi"));
+  display.display();
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500); 
+  }
+  display.clearDisplay();
+  display.drawBitmap(0, 0, connected_symbol, 16, 16, 1);
+  display.display();
+  return true;
+}
 
 void setup() {
   // put your setup code here, to run once:
@@ -105,12 +88,18 @@ void setup() {
   }
   display.clearDisplay();
   watch_init();
+  delay(1000);
+  display.clearDisplay();
 
-  // // Connect to Wi-Fi
-  // connect2Wifi();
-
+  // Connect to Wi-Fi
+  wifi_status = connect2Wifi();
+  display.clearDisplay();
+  if (wifi_status == true)
+    display.drawBitmap(0, 0, connected_symbol, 16, 16, 1);
+  // delay(2000);
   // display.clearDisplay();
-  // // delay(1000);
+
+
   // // drawWatchFace();
 
   // configTime(GMT_offset, daylight_offset, "pool.ntp.org","time.nist.gov");
@@ -119,22 +108,20 @@ void setup() {
 
 void loop(){
 
-  // time_t rawtime = time(nullptr);
-  // struct tm* timeinfo = localtime(&rawtime);
+  time_t rawtime = time(nullptr);
+  struct tm* timeinfo = localtime(&rawtime);
 
-  // h = timeinfo -> tm_hour;
-  // m = timeinfo -> tm_min;
-  // s = timeinfo -> tm_sec;
-  // w = timeinfo -> tm_wday;
+  h = timeinfo -> tm_hour;
+  m = timeinfo -> tm_min;
+  s = timeinfo -> tm_sec;
+  w = timeinfo -> tm_wday;
 
-  // display_hr(h,m);
-
-  // // display.setCursor(0,40);
-  // // displayDay(w);
-  // // display.display();
-
+  if (h!=05 && m !=30){
+    display_hr(h,m);
+  }
   
-  // delay(1000); 
+ 
+  delay(1000); 
 
 }
 
