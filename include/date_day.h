@@ -1,4 +1,15 @@
 /*Code for displaying date, time and day of week*/
+#include "numbers.h"
+
+void drawWatchFace(int h1, int h2, int m1, int m2){
+  //code to draw and update watchface
+    display.drawBitmap(18, 19, number_array[h1], 20, 25, 1);
+	display.drawBitmap(40, 19, number_array[h2], 20, 25, 1);
+	display.drawBitmap(67, 19, number_array[m1], 20, 25, 1);
+	display.drawBitmap(88, 19, number_array[m2], 20, 25, 1);
+    display.display();
+	delay(1000);
+}
 
 void displayDay(int w_day){
     /*Code for displaying day of week on the screen.*/
