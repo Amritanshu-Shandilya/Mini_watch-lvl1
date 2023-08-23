@@ -49,8 +49,6 @@ void watch_init()
 }
 
 
-
-
 // void setupText(int size){
 //   // Function to be called for setting size color and cursor position
 //   display.setTextSize(size);             // Normal 1:1 pixel scale
@@ -93,16 +91,16 @@ void setup() {
 
   // Connect to Wi-Fi
   wifi_status = connect2Wifi();
-  display.clearDisplay();
   if (wifi_status == true)
     display.drawBitmap(0, 0, connected_symbol, 16, 16, 1);
+  display.clearDisplay();
   // delay(2000);
   // display.clearDisplay();
 
 
   // // drawWatchFace();
 
-  // configTime(GMT_offset, daylight_offset, "pool.ntp.org","time.nist.gov");
+  configTime(GMT_offset, daylight_offset, "pool.ntp.org","time.nist.gov");
  
 }
 
@@ -116,11 +114,7 @@ void loop(){
   s = timeinfo -> tm_sec;
   w = timeinfo -> tm_wday;
 
-  if (h!=05 && m !=30){
-    display_hr(h,m);
-  }
-  
- 
+  display_hr(h,m); 
   delay(1000); 
 
 }
