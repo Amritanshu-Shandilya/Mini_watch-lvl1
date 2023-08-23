@@ -50,6 +50,7 @@ void watch_init()
   display.setCursor(38,40);
   display.println(F("Mini-watch"));
   display.display();
+  delay(3000);
 }
 
 
