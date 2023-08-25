@@ -9,6 +9,8 @@ void drawWatchFace(int h1, int h2, int m1, int m2){
   display.fillRect(62, 33, 3, 3, SSD1306_WHITE);
   display.drawBitmap(67, 19, number_array[m1], 20, 25, 1);
   display.drawBitmap(88, 19, number_array[m2], 20, 25, 1);
+  if (WiFi.status() == WL_CONNECTED)
+    display.drawBitmap(0, 0, connected_symbol, 16, 16, 1);
   display.display();
   delay(1000);
 }
