@@ -101,10 +101,14 @@ void setup() {
   // // drawWatchFace();
 
   configTime(GMT_offset, daylight_offset, "pool.ntp.org","time.nist.gov");
- 
+  delay(7000);
 }
 
 void loop(){
+  if (WiFi.status() == WL_CONNECTED){
+    display.drawBitmap(0, 0, connected_symbol, 16, 16, 1);
+    display.display();
+  }
 
   time_t rawtime = time(nullptr);
   struct tm* timeinfo = localtime(&rawtime);
